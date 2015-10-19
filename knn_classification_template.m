@@ -24,5 +24,4 @@ for i = 1:3136
         count = count + 1;
     end
 end
-count/3136
-% KNN of raw data giving us an 56% accuracy means that data are seperable.
+count/size(testing_matrix,1)
