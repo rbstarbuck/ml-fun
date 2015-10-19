@@ -10,7 +10,7 @@
 training_matrix = [subject1_xyz; subject3_xyz; subject5_xyz];
 training_label = [subject1_label; subject3_label;subject5_label];
 testing_matrix = [subject2_xyz; subject4_xyz];
-testing_label = [subject2_label; subject2_label];
+testing_label = [subject2_label; subject4_label];
 
 knn_model = fitcknn(training_matrix,training_label,'NumNeighbors',80);
 rloss = resubLoss(knn_model) % this means it predicts 29.72% of the training data incorrectly
