@@ -1,0 +1,5 @@
+def crit_function(all_features):
+    #define your own criterion here
+    return :
+    
+
