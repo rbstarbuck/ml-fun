@@ -1,0 +1,36 @@
+def sfs(features, m, criterion_func):
+    
+    #features (list): All availible features we have."
+    #m: idea size for features we want"
+    #criterion_func: Function that is used to evaluate the performance of the feature subset."
+
+    # Initialization
+    result_features = []
+    k = 0
+    d = len(features)
+    if m > d:
+        m = d
+
+    while True:
+
+        # Inclusion step
+        
+        print('\nInclusion from feature space', features)
+        crit_func_max = criterion_func(result_features + [features[0]])
+        best_feat = features[0]
+        for x in features[1:]:
+            crit_func_eval = criterion_func(result_features + [x])
+            if crit_func_eval > crit_func_max:
+                crit_func_max = crit_func_eval
+                best_feat = x
+        result_features.append(best_feat)
+        
+        print('include: {} -> feature subset: {}'.format(best_feat, result_features))
+        features.remove(best_feat)
+
+        # Termination condition
+        k = len(result_features)
+        if k == m:
+            break
+
+    return result_features
