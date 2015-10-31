@@ -13,6 +13,10 @@ load('subject_data.mat');
 % testing_matrix, testing_label here
 
 % According to Richmond, mean of abs and RMS gives the best visualization
+%   FROM RICHMOND: mean of abs and RMS are essentially the same feature,
+%   maybe we shouldn't use both.
+%   Also, I included action[1-4]_xyz in subject_data.mat, you don't need to
+%   create them.
 % so I use mean of abs and RMS as examples here
 action1_xyz = [action1(:,2),action1(:,3),action1(:,4)];
 action2_xyz = [action2(:,2),action2(:,3),action2(:,4)];
@@ -28,8 +32,8 @@ training_label = [ones(size(training_matrix1,1),1); 2*ones(size(training_matrix2
 
 % type keyword train to look up parameters of train
 % predict parameters should be consistent with train parameters
-svm_model = train(training_label, sparse(training_matrix),'s 2');
+svm_model = train(training_label, sparse(training_matrix),'-s 2');
 % in principle we should seperate training set and testing set
 testing_label = training_label;
 testing_matrix = training_matrix;
-[predicted_label] = predict(training_label, sparse(training_matrix), svm_model, 's 2');
+[predicted_label] = predict(training_label, sparse(training_matrix), svm_model);

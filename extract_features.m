@@ -6,8 +6,8 @@ function features = extract_features(actionData, windowSize, windowIncrement, fe
 %  windows; if < windowSize, windows will overlap.
 %  @param featureHandle A function handle to a feature extractor that
 %  accepts a N x 3 matrix
-%  @return A M x N matrix of extracted features, where N = number of
-%  windows and M = length of a feature extraction vector
+%  @return A M x N matrix of extracted features, where M = number of
+%  windows and N = length of a feature extraction vector
 
 segmentedData = segment(actionData, windowSize, windowIncrement);
 numWindows = size(segmentedData, 3);
