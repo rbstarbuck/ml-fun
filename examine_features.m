@@ -11,8 +11,8 @@ f_medianabs = @(x) median(abs(x));
 
 % set the segmentation values here
 % if windowIncrement < windowSize, windows will overlap
-windowSize = 512;
-windowIncrement = 256;
+windowSize = 64;
+windowIncrement = 64;
 
 % if you want to apply any smoothing, etc. to the data, do it here
 a1 = action1_xyz;

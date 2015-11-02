@@ -7,7 +7,7 @@ prediction = zeros(length(testData), 1);
 
 features = extract_features(testData, windowSize, centroidSize, featureHandle);
 
-numSegments = length(features);
+numSegments = size(features,1);
 centroidOffset = floor((windowSize - centroidSize + 1) / 2);
 
 for seg = 1:numSegments
