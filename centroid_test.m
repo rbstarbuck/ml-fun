@@ -5,6 +5,8 @@ windowSize = 64
 windowIncrement = 8
 testingWindowCentroid = 8
 
+maxSubjects = 6;
+
 % trainInputData = [action1_xyz ; action2_xyz ; action3_xyz ; action4_xyz];
 % trainInputLabel = [ones(length(action1_xyz), 1) ; 2*ones(length(action2_xyz), 1) ; 3*ones(length(action3_xyz), 1) ; 4*ones(length(action4_xyz), 1)];
 % 
@@ -24,17 +26,32 @@ testingWindowCentroid = 8
 % testMatrix = extract_features(testInputData, windowSize, windowIncrement, @handle_wrapper);
 % testLabel = windowLabels(testInputLabel, windowSize, windowIncrement);
 
-[trainMatrix, trainLabel, testInputData, testInputLabel] = leave_one_out(1, 6, windowSize, windowIncrement, @handle_wrapper);
+totalAccuracy = 0;
+for subjectId = 1:6
+    subjectId
+    
+    [trainMatrix, trainLabel, testInputData, testInputLabel] = leave_one_out(subjectId, maxSubjects, windowSize, windowIncrement, @handle_wrapper);
 
-svm_model = train(trainLabel, sparse(trainMatrix), '-s 2 -q');
-classifier = @(x)(predict(ones(1), sparse(x), svm_model, '-q'));
+%     svm_model = train(trainLabel, sparse(trainMatrix), '-s 2 -q');
+%     classifier = @(x)(predict(ones(1), sparse(x), svm_model, '-q'));
 
-predictions = centroid_classification(testInputData, windowSize, testingWindowCentroid, classifier, @handle_wrapper);
+%     knn_model = fitcknn(trainMatrix, trainLabel, 'NumNeighbors', 80);
+%     classifier = @(x)(predict(knn_model, x));
 
-hits = zeros(length(predictions), 1);
-hits(testInputLabel == predictions) = 1;
-% predictions has '0' values at begin/end of vector where centroid is not
-% in bounds, get rid of them.
-hits(predictions == 0) = [];
+    nb_model = fitcnb(trainMatrix, trainLabel);
+    classifier = @(x)(predict(nb_model, x));
 
-accuracy = sum(hits) / length(hits)
+    predictions = centroid_classification(testInputData, windowSize, testingWindowCentroid, classifier, @handle_wrapper);
+
+    hits = zeros(length(predictions), 1);
+    hits(testInputLabel == predictions) = 1;
+    % predictions has '0' values at begin/end of vector where centroid is not
+    % in bounds, get rid of them.
+    hits(predictions == 0) = [];
+
+    accuracy = sum(hits) / length(hits)
+    totalAccuracy = totalAccuracy + accuracy;
+end
+
+average_accuracy = totalAccuracy / maxSubjects
+

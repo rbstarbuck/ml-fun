@@ -25,12 +25,12 @@ figure
 
 % the vectors passed as the first argument are values used for 'subplot'
 % if you add or remove examine_features calls you'll need to change them
-examine_feature([2, 3, 1], @mean,       a1, a2, a3, a4, windowSize, windowIncrement);
-examine_feature([2, 3, 2], f_medianabs, a1, a2, a3, a4, windowSize, windowIncrement);
-examine_feature([2, 3, 3], @var,        a1, a2, a3, a4, windowSize, windowIncrement);
-examine_feature([2, 3, 4], f_meanabs,   a1, a2, a3, a4, windowSize, windowIncrement);
-examine_feature([2, 3, 5], @rms,        a1, a2, a3, a4, windowSize, windowIncrement);
-examine_feature([2, 3, 6], @max,        a1, a2, a3, a4, windowSize, windowIncrement);
+% examine_feature([2, 2, 1], @mean,       a1, a2, a3, a4, windowSize, windowIncrement);
+examine_feature([2, 2, 1], f_medianabs, a1, a2, a3, a4, windowSize, windowIncrement);
+examine_feature([2, 2, 2], @var,        a1, a2, a3, a4, windowSize, windowIncrement);
+examine_feature([2, 2, 3], f_meanabs,   a1, a2, a3, a4, windowSize, windowIncrement);
+examine_feature([2, 2, 4], @rms,        a1, a2, a3, a4, windowSize, windowIncrement);
+% examine_feature([2, 2, 6], @max,        a1, a2, a3, a4, windowSize, windowIncrement);
 
 end
 
