@@ -1,25 +1,28 @@
-function features = extract_features(actionData, windowSize, windowIncrement, featureHandle)
-%% EXTRACT_FEATURES Segments a 2D dataset and applies a feature extractor to each window
-%  @param actionData The data to extract features from.
-%  @param windowSize The number of data points (rows) in a single window.
-%  @param windowIncrement The distance between start elements of consecutive 
-%  windows; if < windowSize, windows will overlap.
-%  @param featureHandle A function handle to a feature extractor that
-%  accepts a N x 3 matrix
-%  @return A M x N matrix of extracted features, where N = number of
-%  windows and M = length of a feature extraction vector
+function y = action_resize(input, num)
+%% resize input matrix to fill in pca
+% created on 1st December by Yixing
+% last modified on 1st December
 
-% should this be return a N x M matrix of extracted features?
+% @param input: N by 5 matrix      
+% @param num: number of action samples
+% @param y: return a N/num by 3*num matrix 
 
-    segmentedData = segment(actionData, windowSize, windowIncrement);
-    numWindows = size(segmentedData, 3);
-    featureSize = size(featureHandle(squeeze(segmentedData(:,:,1))));
-    features = zeros(featureSize);
+% Note: sliding window approach is adopted to increase the number of
+% training data
 
-    for i = 1:numWindows
-    % feature handle returns a row vector
-    % will throw away the samples not enough for a window
-        features(i,:) = featureHandle(squeeze(segmentedData(:,:,i)));
+N = size(input,1);
+% M = floor (N/num) for normal partition
+M = N - num; % for sliding window approach
+y = zeros(M, 3*num);
+k = 1;
+for i = 1:M
+    for j = 0:num-1
+        y(i,j*3+1) = input(k,2);
+        y(i,j*3+2) = input(k,3);
+        y(i,j*3+3) = input(k,4);
+        k = k+1;
     end
-
+    % sliding window approach
+    k = k - num + 1;
 end
+
