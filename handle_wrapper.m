@@ -16,9 +16,7 @@ function features = handle_wrapper(input_matrix)
  weight2 = 1;
  f3 = @var;
  weight3 = 1;
- f4 = @(x) median(abs(x));
- weight4 = 0.7;
  f4 = @pca_handle;
- 
+ weight4 = 0.7;
  features = [weight1*f1(input_matrix), weight2*f2(input_matrix), weight3*f3(input_matrix), weight4*f4(input_matrix,10)];
 end
