@@ -33,7 +33,7 @@ maxSubjects = 6;
 % testLabel = windowLabels(testInputLabel, windowSize, windowIncrement);
 
 totalAccuracy = 0;
-for subjectId = 1:6
+for subjectId = 1:maxSubjects
     subjectId;
      fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
         windowSize, windowIncrement, testingWindowCentroid, subjectId);
