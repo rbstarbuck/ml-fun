@@ -1,9 +1,15 @@
-addpath('liblinear-2.1/matlab');
+p = mfilename('fullpath');
+codeDirectory = fileparts(p);
+addpath([codeDirectory '/feature_handles']);
+addpath([codeDirectory '/liblinear-2.1']);
+addpath([codeDirectory '/liblinear-2.1/matlab']);
+addpath(genpath([codeDirectory '/feature_handles']));
+%make;
 load('subject_data.mat');
 
-windowSize = 64
-windowIncrement = 8
-testingWindowCentroid = 8
+windowSize = 64;
+windowIncrement = 8;
+testingWindowCentroid = 8;
 
 maxSubjects = 6;
 
@@ -28,18 +34,20 @@ maxSubjects = 6;
 
 totalAccuracy = 0;
 for subjectId = 1:6
-    subjectId
+    subjectId;
+     fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
+        windowSize, windowIncrement, testingWindowCentroid, subjectId);
     
     [trainMatrix, trainLabel, testInputData, testInputLabel] = leave_one_out(subjectId, maxSubjects, windowSize, windowIncrement, @handle_wrapper);
 
-%     svm_model = train(trainLabel, sparse(trainMatrix), '-s 2 -q');
-%     classifier = @(x)(predict(ones(1), sparse(x), svm_model, '-q'));
+     svm_model = train(trainLabel, sparse(trainMatrix), '-s 2 -q');
+     classifier = @(x)(predict(ones(1), sparse(x), svm_model, '-q'));
 
-%     knn_model = fitcknn(trainMatrix, trainLabel, 'NumNeighbors', 80);
-%     classifier = @(x)(predict(knn_model, x));
+ %    knn_model = fitcknn(trainMatrix, trainLabel, 'NumNeighbors', 80);
+ %    classifier = @(x)(predict(knn_model, x));
 
-    nb_model = fitcnb(trainMatrix, trainLabel);
-    classifier = @(x)(predict(nb_model, x));
+%    nb_model = fitcnb(trainMatrix, trainLabel);
+%    classifier = @(x)(predict(nb_model, x));
 
     predictions = centroid_classification(testInputData, windowSize, testingWindowCentroid, classifier, @handle_wrapper);
 
@@ -49,8 +57,10 @@ for subjectId = 1:6
     % in bounds, get rid of them.
     hits(predictions == 0) = [];
 
-    accuracy = sum(hits) / length(hits)
+    accuracy = sum(hits) / length(hits);
     totalAccuracy = totalAccuracy + accuracy;
+    
+    fprintf('Accuracy = %f%%\n\n', accuracy*100);
 end
 
 average_accuracy = totalAccuracy / maxSubjects
