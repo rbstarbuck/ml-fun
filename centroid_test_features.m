@@ -33,13 +33,19 @@ function centroid_test_features()
 
     % testMatrix = extract_features(testInputData, windowSize, windowIncrement, @handle_wrapper);
     % testLabel = windowLabels(testInputLabel, windowSize, windowIncrement);
-    handle = {};
-    handle{1} = @rms_handle;
-    handle{2} = @abs_fft_rms_handle;
-    handle{3} = @energy_handle;
-    handle{4} = @entropy_handle;
-    handle{5} = @abs_mean_handle;
-    handle{6} = @fft_rms_handle;
+%     handle = {};
+%     handle{1} = @abs_average_peak_handle;
+%     handle{2} = @abs_std_handle;
+%     %handle{3} = @abs_mean_handle;
+%     handle{3} = @abs_fft_skewness_handle;
+%     %handle{5} = @pca_handle;
+%     handle{4} = @rms_handle;
+%     handle{1} = @rms_handle;
+%     handle{2} = @abs_fft_rms_handle;
+%     handle{3} = @energy_handle;
+%     handle{4} = @entropy_handle;
+%     handle{5} = @abs_mean_handle;
+%     handle{6} = @fft_rms_handle;
     %{
     handle{7} = @dc_fft_rms_handle;
     handle{8} = @abs_corr_coefficient_handle;
@@ -59,17 +65,23 @@ function centroid_test_features()
     handle{22} = @abs_skewness_handle; 
     handle{23} = @abs_fft_kurtosis_handle;
     %}
-    handleComb = {};
-    for comb = 1:6
+    handle = {};
+    handle{1} = @abs_average_peak_handle;
+    handle{2} = @abs_std_handle;
+    handle{3} = @abs_fft_skewness_handle;
+    handle{4} = @rms_handle;
+    handleComb = handle;
+    weights = [1, 0.5, .25, .75];
+    for comb = 1:1
         average_accuracy = [];
-        handleComb = nchoosek(handle,comb);
+        %handleComb = nchoosek(handle,comb);
         for featNum = 1:size(handleComb,1)
             totalAccuracy = 0;
-               for subjectId = 1:6
-                 %fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
-                  %  windowSize, windowIncrement, testingWindowCentroid, subjectId);
+               for subjectId = 1:maxSubjects
+                 fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
+                    windowSize, windowIncrement, testingWindowCentroid, subjectId);
                 %wrapper = handle_wrapper_tester(handleComb{featNum});
-                [trainMatrix, trainLabel, testInputData, testInputLabel] = leave_one_out_tester(subjectId, maxSubjects, windowSize, windowIncrement, handleComb(featNum,:));
+                [trainMatrix, trainLabel, testInputData, testInputLabel] = leave_one_out_tester(subjectId, maxSubjects, windowSize, windowIncrement, handleComb(featNum,:), weights);
 
                  svm_model = train(trainLabel, sparse(trainMatrix), '-s 2 -q');
                  classifier = @(x)(predict(ones(1), sparse(x), svm_model, '-q'));
@@ -80,7 +92,7 @@ function centroid_test_features()
             %    nb_model = fitcnb(trainMatrix, trainLabel);
             %    classifier = @(x)(predict(nb_model, x));
 
-                predictions = centroid_classification_tester(testInputData, windowSize, testingWindowCentroid, classifier, handleComb(featNum,:));
+                predictions = centroid_classification_tester(testInputData, windowSize, testingWindowCentroid, classifier, handleComb(featNum,:), weights);
 
                 hits = zeros(length(predictions), 1);
                 hits(testInputLabel == predictions) = 1;
@@ -91,16 +103,17 @@ function centroid_test_features()
                 accuracy = sum(hits) / length(hits);
                 totalAccuracy = totalAccuracy + accuracy;
 
-                %fprintf('Accuracy = %f%%\n\n', accuracy*100);
+                fprintf('Accuracy = %f%%\n\n', accuracy*100);
             end
             average_accuracy(featNum) = totalAccuracy / maxSubjects;
+            fprintf('Average Accuracy = %f%%\n\n', average_accuracy(featNum)*100);
         end
-        for i = 1:size(average_accuracy,2)
-            for j = 1:size(handleComb(i,:), 2)
-                f = handleComb{i,j};
-                fprintf('%s, ', func2str(f));
-            end
-            fprintf('= %f\n', average_accuracy(i));
-        end
+%         for i = 1:size(average_accuracy,2)
+%             for j = 1:size(handleComb(i,:), 2)
+%                 f = handleComb{i,j};
+%                 fprintf('%s, ', func2str(f));
+%             end
+%             fprintf('= %f\n', average_accuracy(i));
+%         end
     end
 end
