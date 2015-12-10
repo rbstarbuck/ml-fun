@@ -66,7 +66,7 @@ handleComb = {};
         handleComb = nchoosek(handle,comb);
         for featNum = 1:size(handleComb,1)
             totalAccuracy = 0;
-               for subjectId = 1:6
+               for subjectId = 1:maxSubjects
                  %fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
                   %  windowSize, windowIncrement, testingWindowCentroid, subjectId);
                 %wrapper = handle_wrapper_tester(handleComb{featNum});

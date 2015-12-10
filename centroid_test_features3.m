@@ -48,12 +48,12 @@ function centroid_test_features3()
     handle{11} = @abs_fft_peak_to_peak_handle;
     handle{12} = @abs_average_peak_percentile_handle;
     %}
-    handle{1} = @average_peak_percentile_handle;
-    handle{2} = @abs_average_peak_handle;
-    handle{3} = @abs_fft_std_handle;
-    handle{4} = @fft_std_handle;
-    handle{5} = @abs_std_handle;
-    handle{6} = @abs_mean_handle;
+%     handle{1} = @average_peak_percentile_handle;
+%     handle{2} = @abs_average_peak_handle;
+%     handle{3} = @abs_fft_std_handle;
+%     handle{4} = @fft_std_handle;
+%     handle{5} = @abs_std_handle;
+%     handle{6} = @abs_mean_handle;
     %{
     handle{19} = @(x)mean(abs(x));
     handle{20} = @var;
@@ -62,17 +62,25 @@ function centroid_test_features3()
     handle{23} = @abs_skewness_handle;
     handle{24} = @abs_fft_kurtosis_handle;
     %}
-    handleComb = {};
-    for comb = 1:6
+    handle{1} = @abs_average_peak_handle;
+    handle{2} = @abs_std_handle;
+    %handle{3} = @abs_mean_handle;
+    handle{3} = @abs_fft_skewness_handle;
+    handle{4} = @rms_handle;
+    handleComb = handle;
+     weights = [0.25, 0.5, 0.75, 1];
+     weightPerm = perms(weights);
+    for perm = 1:size(weightPerm,1)
         average_accuracy = [];
-        handleComb = nchoosek(handle,comb);
+        %handleComb = nchoosek(handle,comb);
         for featNum = 1:size(handleComb,1)
             totalAccuracy = 0;
-               for subjectId = 1:6
-                 %fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
-                  %  windowSize, windowIncrement, testingWindowCentroid, subjectId);
+               for subjectId = 1:maxSubjects
+%                   fprintf('Window Size: %d\nWindow Increment: %d\nTesting Window Centroid: %d\nSubject ID: %d\n', ...
+%                      windowSize, windowIncrement, testingWindowCentroid, subjectId);
                 %wrapper = handle_wrapper_tester(handleComb{featNum});
-                [trainMatrix, trainLabel, testInputData, testInputLabel] = leave_one_out_tester(subjectId, maxSubjects, windowSize, windowIncrement, handleComb(featNum,:));
+                [trainMatrix, trainLabel, testInputData, testInputLabel] = ... 
+                    leave_one_out_tester(subjectId, maxSubjects, windowSize, windowIncrement, handleComb(featNum,:), weightPerm(perm,:));
 
                  svm_model = train(trainLabel, sparse(trainMatrix), '-s 2 -q');
                  classifier = @(x)(predict(ones(1), sparse(x), svm_model, '-q'));
@@ -83,7 +91,7 @@ function centroid_test_features3()
             %    nb_model = fitcnb(trainMatrix, trainLabel);
             %    classifier = @(x)(predict(nb_model, x));
 
-                predictions = centroid_classification_tester(testInputData, windowSize, testingWindowCentroid, classifier, handleComb(featNum,:));
+                predictions = centroid_classification_tester(testInputData, windowSize, testingWindowCentroid, classifier, handleComb(featNum,:), weightPerm(perm,:));
 
                 hits = zeros(length(predictions), 1);
                 hits(testInputLabel == predictions) = 1;
@@ -93,10 +101,13 @@ function centroid_test_features3()
 
                 accuracy = sum(hits) / length(hits);
                 totalAccuracy = totalAccuracy + accuracy;
-
-                %fprintf('Accuracy = %f%%\n\n', accuracy*100);
-            end
+                
+                %w = sprintf('%f ', weightPerm(perm,:));
+                %fprintf('Accuracy = %f%%', accuracy*100); %, weights = %s\n\n', accuracy*100, w);
+               end
+            w = sprintf('%f ', weightPerm(perm,:));
             average_accuracy(featNum) = totalAccuracy / maxSubjects;
+            fprintf('Average Accuracy = %f%%, weights = %s\n\n', average_accuracy(featNum)*100, w);
         end
         for i = 1:size(average_accuracy,2)
             for j = 1:size(handleComb(i,:), 2)
